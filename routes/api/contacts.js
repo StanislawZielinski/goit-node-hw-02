@@ -1,8 +1,8 @@
 const express = require('express')
-// const { nanoid } = require('nanoid')
 const router = express.Router()
-const contacts = require("../../models/contacts")
-
+const contacts = require("../../models/contacts");
+const joi = require('../../utils/joi/joi');
+const Joi = require('joi');
 
 router.get('/', async (req, res, next) => {
   const response = await contacts.listContacts()
@@ -31,12 +31,21 @@ router.post('/', async (req, res, next) => {
   const {name, email, phone} = req.body;
   const canSave = [name, email, phone].every(Boolean);
   console.log(canSave);
+  console.log(name);
   if (canSave) {
-    const response = await contacts.addContact(name, email, phone)
-    res.status(201).json({
-      status:201,
-      data:response
-    })
+    const result = joi.nameSchema.validate(name);
+    const { error } = result; 
+    console.log(result)
+    const valid = error == null;
+    if (!valid) {
+      res.status(400).json({ message: 'please insert proper name' })
+    } else {
+      const response = await contacts.addContact(name, email, phone)
+      res.status(201).json({
+        status:201,
+        data:response
+      })
+    }
   } else {
     res.status(400).json({ message: 'missing required field' })
   }

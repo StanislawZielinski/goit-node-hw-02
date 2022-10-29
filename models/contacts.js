@@ -65,8 +65,6 @@ const updateContact = async (contactId, body) => {
     const contactsTMP = await listContacts();
     const upDatedContacts = await contactsTMP.map((elem)=>elem.id===contactId.toString() ? {...elem,...body}: elem);
     console.log(upDatedContacts);
-    // const contactsWithoutDeletedContact = await contactsTMP.filter((elem)=>elem.id !== contactId);
-    // const newContacts = [...contactsWithoutDeletedContact, uptatedContact]
     await fs.writeFile(contactsPath,JSON.stringify(upDatedContacts));
     const uptatedContact = await upDatedContacts.filter((elem)=>elem.id===contactId.toString());
     return uptatedContact
