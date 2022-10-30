@@ -41,14 +41,12 @@ const removeContact = async (contactId) => {
   }
 }
 
-const addContact = async (name, email, phone) => {
+const addContact = async (body) => {
   try {
     const contactsTMP = await listContacts();
     const newContact = {
       id:nanoid(),
-      name: name,
-      email: email,
-      phone: phone,
+      ...body
     }
 
     const contacts = [...contactsTMP, newContact]
