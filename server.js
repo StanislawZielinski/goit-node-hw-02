@@ -30,9 +30,6 @@ const uriDb = process.env.DB_HOST;
 
 const connection = mongoose.connect(uriDb, {
   promiseLibrary: global.Promise,
-  // useCreateIndex: true,
-  // useUnifiedTopology: true,
-  // useFindAndModify: false,
 });
 
 connection
