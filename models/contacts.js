@@ -96,18 +96,23 @@ const addContact = (body) => {
   return Contact.create(body)
 }
 
-const updateTask = (id, fields) => {
-  return Contact.findByIdAndUpdate({ _id: id }, fields, { new: true })
+const updateContact = (id, body) => {
+  return Contact.findByIdAndUpdate({ _id: id }, body, { new: true })
 }
 
-const removeTask = (id) => {
+const removeContact = (id) => {
   return Contact.findByIdAndRemove({ _id: id })
+}
+
+const updateStatusContact = (id, body) => {
+  return Contact.findByIdAndUpdate({ _id: id }, body, { new: true })
 }
 
 module.exports = {
   listContacts,
   getContactById,
   addContact,
-  updateTask,
-  removeTask,
+  updateContact,
+  removeContact,
+  updateStatusContact
 }

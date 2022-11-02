@@ -55,49 +55,81 @@ router.post('/', async (req, res, next) => {
     console.log(error);
     res.status(400).json({ message: 'Not found' })
   }
+});
+
+
+router.put('/:contactId', async (req, res, next) => {
+  try {
+    const {contactId} = req.params;
+    const contactTMP = await contacts.getContactById(contactId);
+    const body = req.body;
+    const {name, email, phone, favorite} = body;
+    const canSave = [name, email, phone, favorite].some(Boolean);
+    const result = joi.schema.validate(body);
+    const { error } = result; 
+    if (contactTMP) {
+      if (canSave && !error) {
+        const response = await contacts.updateContact(contactId, body);
+        res.status(200).json({ 
+          status: 200,
+          message: response});
+      } else {
+        const errorMessage = error.details.map((elem)=>elem.message);
+        res.status(400).json({ message: errorMessage })
+      }
+    } else {
+      res.status(404).json({ message: 'Not found' })
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: 'Not found' })
+  }
+});
+
+router.delete('/:contactId', async (req, res, next) => {
+  try {
+    const {contactId} = req.params;
+    const contactTMP = await contacts.getContactById(contactId);
+    if (contactTMP) {
+      await contacts.removeContact(contactId);
+      res.status(200).json({ 
+        status: 200,
+        message: 'contact deleted'});
+    } else {
+      res.status(404).json({ message: 'Not found' })
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: 'Not found' })
+  }  
 })
 
+router.patch('/:contactId/favorite', async (req, res, next) => {
+  try {
+    const {contactId} = req.params;
+    const contactTMP = await contacts.getContactById(contactId);
+    const body = req.body;
+    const result = joi.schema.validate(body);
+    const { error } = result; 
+    if (contactTMP && !error) {
+      const key = Object.keys(body);
+      if (key.length===1 && key.includes('favorite')) {
+        const response = await contacts.updateStatusContact(contactId, body);
+        res.status(200).json({ 
+          status: 200,
+          message: response});
+      } else {
+        res.status(400).json({ message: 'missing field favorite or too many fields'})
+      }
 
-// })
-
-// router.put('/:contactId', async (req, res, next) => {
-//   const {contactId} = req.params;
-//   const contactsTMP = await contacts.getContactById(contactId);
-//   const isIdFound = await contactsTMP.find(contact => contact.id === contactId);
-//   const body = req.body;
-//   const {name, email, phone} = body;
-//   const canSave = [name,email,phone].some(Boolean);
-//   const result = joi.schema.validate(body);
-//   const { error } = result; 
-//   if (isIdFound) {
-//     if (canSave && !error) {
-//       const response = await contacts.updateContact(contactId, body);
-//       res.status(200).json({ 
-//         status: 200,
-//         message: response});
-//     } else {
-//       const errorMessage = error.details.map((elem)=>elem.message);
-//       res.status(400).json({ message: errorMessage })
-//     }
-//   } else {
-//     res.status(404).json({ message: 'Not found' })
-//   }
-// })
-
-
-// router.delete('/:contactId', async (req, res, next) => {
-//   const {contactId} = req.params;
-//   const contactsTMP = await contacts.getContactById(contactId);
-//   const isIdFound = await contactsTMP.find(contact => contact.id === contactId);
-
-//   if (isIdFound) {
-//     await contacts.removeContact(contactId);
-//     res.status(200).json({ 
-//       status: 200,
-//       message: 'contact deleted'});
-//   } else {
-//     res.status(404).json({ message: 'Not found' })
-//   }
-// })
+    } else {
+      const errorMessage = error.details.map((elem)=>elem.message);
+      res.status(400).json({ message: errorMessage})
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: 'Not found' })
+  }  
+});
 
 module.exports = router

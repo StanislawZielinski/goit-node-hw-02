@@ -7,11 +7,9 @@ const schema = Joi.object().keys({
         .max(30),
     email: Joi.string()
         .email({ tlds: false }),
-    phone: Joi.number().integer()
+    phone: Joi.number().integer(),
+    favorite: Joi.boolean(),
     })
-
-
-
 
 module.exports = {
     schema,
