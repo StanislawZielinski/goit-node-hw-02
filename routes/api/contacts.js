@@ -61,13 +61,13 @@ router.post('/', async (req, res, next) => {
 router.put('/:contactId', async (req, res, next) => {
   try {
     const {contactId} = req.params;
-    const contactTMP = await contacts.getContactById(contactId);
+    const contactFile = await contacts.getContactById(contactId);
     const body = req.body;
     const {name, email, phone, favorite} = body;
     const canSave = [name, email, phone, favorite].some(Boolean);
     const result = joi.schema.validate(body);
     const { error } = result; 
-    if (contactTMP) {
+    if (contactFile) {
       if (canSave && !error) {
         const response = await contacts.updateContact(contactId, body);
         res.status(200).json({ 
@@ -89,8 +89,8 @@ router.put('/:contactId', async (req, res, next) => {
 router.delete('/:contactId', async (req, res, next) => {
   try {
     const {contactId} = req.params;
-    const contactTMP = await contacts.getContactById(contactId);
-    if (contactTMP) {
+    const contactFile = await contacts.getContactById(contactId);
+    if (contactFile) {
       await contacts.removeContact(contactId);
       res.status(200).json({ 
         status: 200,
@@ -107,11 +107,11 @@ router.delete('/:contactId', async (req, res, next) => {
 router.patch('/:contactId/favorite', async (req, res, next) => {
   try {
     const {contactId} = req.params;
-    const contactTMP = await contacts.getContactById(contactId);
+    const contactFile = await contacts.getContactById(contactId);
     const body = req.body;
     const result = joi.schema.validate(body);
     const { error } = result; 
-    if (contactTMP && !error) {
+    if (contactFile && !error) {
       const key = Object.keys(body);
       if (key.length===1 && key.includes('favorite')) {
         const response = await contacts.updateStatusContact(contactId, body);
