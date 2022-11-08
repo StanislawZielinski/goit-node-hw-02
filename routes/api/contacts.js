@@ -12,8 +12,8 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:contactId', async (req, res, next) => {
   const {contactId} = req.params;
-  const contactsTMP = await contacts.getContactById(contactId);
-  const isIdFound = await contactsTMP.find(contact => contact.id === contactId);
+  const contactsFile = await contacts.getContactById(contactId);
+  const isIdFound = await contactsFile.find(contact => contact.id === contactId);
 
   if (isIdFound) {
     const response = await contacts.getContactById(contactId);
@@ -23,14 +23,11 @@ router.get('/:contactId', async (req, res, next) => {
   } else {
     res.status(404).json({ message: 'Not found' })
   }
-
 })
 
 router.post('/', async (req, res, next) => {
   const body = req.body;
-  const canSave = [body.name, body.email, body.phone].every(Boolean);
-  if (canSave) {
-    const result = joi.schema.validate(body);
+    const result = joi.schemaPost.validate(body);
     const { error } = result; 
     if (error) {
       const errorMessage = error.details.map((elem)=>elem.message);
@@ -41,25 +38,18 @@ router.post('/', async (req, res, next) => {
         status:201,
         data:response
       })
-    }
-  } else {
-    res.status(400).json({ message: 'missing required field' })
-  }
-
-
+    } 
 })
 
 router.put('/:contactId', async (req, res, next) => {
   const {contactId} = req.params;
-  const contactsTMP = await contacts.getContactById(contactId);
-  const isIdFound = await contactsTMP.find(contact => contact.id === contactId);
+  const contactsFile = await contacts.getContactById(contactId);
+  const isIdFound = await contactsFile.find(contact => contact.id === contactId);
   const body = req.body;
-  const {name, email, phone} = body;
-  const canSave = [name,email,phone].some(Boolean);
-  const result = joi.schema.validate(body);
+  const result = joi.schemaPut.validate(body);
   const { error } = result; 
   if (isIdFound) {
-    if (canSave && !error) {
+    if (!error) {
       const response = await contacts.updateContact(contactId, body);
       res.status(200).json({ 
         status: 200,
@@ -73,11 +63,10 @@ router.put('/:contactId', async (req, res, next) => {
   }
 })
 
-
 router.delete('/:contactId', async (req, res, next) => {
   const {contactId} = req.params;
-  const contactsTMP = await contacts.getContactById(contactId);
-  const isIdFound = await contactsTMP.find(contact => contact.id === contactId);
+  const contactsFile = await contacts.getContactById(contactId);
+  const isIdFound = await contactsFile.find(contact => contact.id === contactId);
 
   if (isIdFound) {
     await contacts.removeContact(contactId);
