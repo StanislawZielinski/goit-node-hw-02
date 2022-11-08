@@ -32,30 +32,20 @@ router.get('/:contactId', async (req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
-  try {
-    const body = req.body;
-    const canSave = [body.name, body.email, body.phone].every(Boolean);
-    if (canSave) {
-      const result = joi.schema.validate(body);
-      const { error } = result; 
-      if (error) {
-        const errorMessage = error.details.map((elem)=>elem.message);
-        res.status(400).json({ message: errorMessage })
-      } else {
-        const response = await contacts.addContact(body)
-        res.status(201).json({
-          status:201,
-          data:response
-        })
-      }
+  const body = req.body;
+    const result = joi.schemaPost.validate(body);
+    const { error } = result; 
+    if (error) {
+      const errorMessage = error.details.map((elem)=>elem.message);
+      res.status(400).json({ message: errorMessage })
     } else {
-      res.status(400).json({ message: 'missing required field' })
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: 'Not found' })
-  }
-});
+      const response = await contacts.addContact(body)
+      res.status(201).json({
+        status:201,
+        data:response
+      })
+    } 
+})
 
 
 router.put('/:contactId', async (req, res, next) => {
