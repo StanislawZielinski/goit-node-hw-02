@@ -5,10 +5,12 @@ const {nanoid} = require("nanoid");
 const contactsPath = path.resolve('./models/contacts.json');
 
 // TODO: udokumentuj każdą funkcję
+
+// fn to return list of contacts
 const listContacts = async() => {
   try {
-      const contactsTMP = await fs.readFile(contactsPath);
-      const contacts = await JSON.parse(contactsTMP);
+      const contactsFile = await fs.readFile(contactsPath);
+      const contacts = await JSON.parse(contactsFile);
       return contacts 
   }
   catch(error) {
@@ -16,10 +18,11 @@ const listContacts = async() => {
   }
 }
 
+// fn to return contact by ID
 const getContactById = async (contactId) => {
   try {
-    const contactsTMP = await listContacts();
-    const contact = await contactsTMP.filter((elem)=>elem.id===contactId.toString());
+    const contactsFile = await listContacts();
+    const contact = await contactsFile.filter((elem)=>elem.id===contactId);
     return contact
   } 
   catch (error) {
@@ -28,10 +31,11 @@ const getContactById = async (contactId) => {
   }
 }
 
+// fn to delete contact by ID
 const removeContact = async (contactId) => {
   try {
-    const contactsTMP = await listContacts();
-    const contacts = await contactsTMP.filter((elem)=>elem.id !== contactId);
+    const contactsFile = await listContacts();
+    const contacts = await contactsFile.filter((elem)=>elem.id !== contactId);
     await fs.writeFile(contactsPath,JSON.stringify(contacts));
     return contacts
 
@@ -41,15 +45,16 @@ const removeContact = async (contactId) => {
   }
 }
 
+// fn to create contact with new ID
 const addContact = async (body) => {
   try {
-    const contactsTMP = await listContacts();
+    const contactsFile = await listContacts();
     const newContact = {
       id:nanoid(),
       ...body
     }
 
-    const contacts = [...contactsTMP, newContact]
+    const contacts = [...contactsFile, newContact]
     await fs.writeFile(contactsPath,JSON.stringify(contacts));
     return contacts
   } 
@@ -58,10 +63,11 @@ const addContact = async (body) => {
   }
 }
 
+// fn to update contact 
 const updateContact = async (contactId, body) => {
   try {
-    const contactsTMP = await listContacts();
-    const upDatedContacts = await contactsTMP.map((elem)=>elem.id===contactId.toString() ? {...elem,...body}: elem);
+    const contactsFile = await listContacts();
+    const upDatedContacts = await contactsFile.map((elem)=>elem.id===contactId.toString() ? {...elem,...body}: elem);
     console.log(upDatedContacts);
     await fs.writeFile(contactsPath,JSON.stringify(upDatedContacts));
     const uptatedContact = await upDatedContacts.filter((elem)=>elem.id===contactId.toString());
