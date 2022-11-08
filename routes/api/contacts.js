@@ -53,12 +53,10 @@ router.put('/:contactId', async (req, res, next) => {
     const {contactId} = req.params;
     const contactFile = await contacts.getContactById(contactId);
     const body = req.body;
-    const {name, email, phone, favorite} = body;
-    const canSave = [name, email, phone, favorite].some(Boolean);
-    const result = joi.schema.validate(body);
+    const result = joi.schemaPut.validate(body);
     const { error } = result; 
     if (contactFile) {
-      if (canSave && !error) {
+      if (!error) {
         const response = await contacts.updateContact(contactId, body);
         res.status(200).json({ 
           status: 200,
